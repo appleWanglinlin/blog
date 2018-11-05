@@ -59,6 +59,17 @@ app.post('/register',(req,res)=>{
     })
 })
 
+//登录
+app.post('/login',(req,res)=>{
+    const user = req.body
+    const sql = 'select * from users where username = ? and password = ?'
+    conn.query(sql,[user.username,user.password],(err,result)=>{
+        if(err) return res.status(500).send({status:500,msg:'登录失败'})
+        if(result.length === 0) return res.status(400).send({status:400,msg:'用户名或密码错误'})
+        res.send({status:200,msg:'用户登录成功'})
+    })
+})
+
 app.listen(3000,()=>{
     console.log('server running at http://127.0.0.1:3000')
 })

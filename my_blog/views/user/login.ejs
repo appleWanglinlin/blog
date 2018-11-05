@@ -56,11 +56,11 @@
           type: 'POST',
           dataType: 'json',
           success: function (result) {
-            if (result.status !== 200) {
-              // 登录失败
-              return alert(result.msg)
+            if (result.status === 200) {
+              // 登录成功
+              alert(result.msg)
             }
-            location.href = '/'
+            location.href = '/';
           }
         })
       })
