@@ -1,75 +1,44 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const mysql = require('mysql')
-const moment = require('moment')
+const fs = require('fs')
+const path = require('path')
+const session = require('express-session')
+
 const app = express()
 
-const conn  = mysql.createConnection({
-    host:'127.0.0.1',
-    user:'root',
-    password:'root',
-    database:'blog'
-})
-
+//设置默认的模板引擎
 app.set('view engine','ejs')
+
+//模板的跟目录，将来渲染页面时都相对此路劲
 app.set('views','./views')
 
-
+//托管静态资源
 app.use('/node_modules',express.static('./node_modules'))
+
+//注册body-parser中间件，注册以后才可以在req中使用body对象获取客户端post提交过来的数据
 app.use(bodyParser.urlencoded({ extended: false }))
 
-//访问index.ejs
-app.get('/',(req,res)=>{
-    res.render('index.ejs',{})
-})
-//访问register.ejs
-app.get('/register',(req,res)=>{
-    res.render('./user/register.ejs',{})
-})
+//只要注册了session的中间件，以后任何一个可以使用req对象的地方都可以访问到req.session
+app.use(session({
+    secret: 'blog niubility',
+    resave: false,
+    saveUninitialized: false
+}))
+//  //导入首页的路由模块
+//  const indexRouter = require('./router/index.js')
+//  app.use(indexRouter)
 
-//访问login.ejs
-app.get('/login',(req,res)=>{
-    res.render('./user/login.ejs',{})
-})
+//  //导入用户模块
+// const userRouter = require('./router/user.js')
+// app.use(userRouter)
 
-//注册
-app.post('/register',(req,res)=>{
-    const user = req.body
-    //判断不能为空
-    if(user.username.length<=0||user.password.length<=0||user.nickname.length<=0) 
-    return res.status(400).send({static:400,msg:'请输入完整的用户信息'})
-    //判断用户名重复
-    const sql = 'select count(*) as count from users where username=?'
-    conn.query(sql,user.username,(err,result)=>{
-        //判断sql语句是否有问题，服务器端的错误
-        if(err) return res.status(500).send({static:500,msg:'用户请求失败'})
-        //用户名是否重复        
-        if(result[0].count!=0) 
-        return res.status(402).send({status:402,msg:'用户名重复'})
-
-        //给用户添加创建时间的属性
-       
-        user.ctime = moment().format('YYYY-MM-DD HH:mm:ss')
-        //当满足添加条件时执行的代码
-        const sql = 'insert into users set ?'
-        conn.query(sql,user,(err,result)=>{
-            if(err || result.affectedRows!=1) return res.status(500).send({status:500,msg:'用户添加失败'})
-            res.send({status:200,msg:'用户添加成功'})
-        })
+//自动导入router目录下所有的路由模块
+fs.readdir('./router',(err,result)=>{
+    result.forEach(item=>{
+        const router = require(path.join(__dirname,'./router',item))
+        app.use(router)
     })
 })
-
-//登录
-app.post('/login',(req,res)=>{
-    const user = req.body
-    const sql = 'select * from users where username = ? and password = ?'
-    conn.query(sql,[user.username,user.password],(err,result)=>{
-        if(err) return res.status(500).send({status:500,msg:'登录失败'})
-        if(result.length === 0) return res.status(400).send({status:400,msg:'用户名或密码错误'})
-        res.send({status:200,msg:'用户登录成功'})
-    })
-})
-
 app.listen(3000,()=>{
     console.log('server running at http://127.0.0.1:3000')
 })
