@@ -1,10 +1,10 @@
-// module.exports = {
-//     handleGetArticleAdd(req,res){
-//         //判断用户的登录状态，处理登录拦截
-//         // if(!req.session.isLogin) return req.redirect('/')
-//         res.render('./article/add.ejs',{
-//             // user:req.session.user,
-//             // isLogin:req.session.isLogin
-//         })
-//     }
-// }
+module.exports ={
+    handleGetArticleAdd(req,res){
+        //如果用户没有登录，则不允许访问文章添加页
+        if(!req.session.isLogin) return res.redirect('/')
+        res.render('./article/add.ejs',{
+         user:req.session.user,
+         isLogin:req.session.isLogin
+        })
+    }
+}
