@@ -35,6 +35,30 @@ module.exports ={
                 article:result[0]
             })
         })
+    },
+    handleGetArticleEdit(req,res){
+        //如果没有登录就不能进入编辑文章界面，直接跳到index.ejs页面
+        if(!req.session.isLogin) return res.redirect('/')
+        //根据id查询数据渲染到编辑页面
+        const id = req.params.id
+        const sql = 'select * from articles where id=?'
+        conn.query(sql,id,(err,result)=>{
+            if(err || result.length !==1) return res.status(500).send({status:500,msg:'文章获取失败，请重试！'})
+            res.render('./article/edit.ejs',{
+                user:req.session.user,
+                isLogin:req.session.isLogin,
+                article:result[0]
+            })
+        })
        
+    },
+    handlePostArticleEdit(req,res){
+        const article = req.body
+        article.ctime = moment().format('YYYY-MM-DD HH:mm:ss')
+        const sql = 'update articles set ? where id=?'
+        conn.query(sql,[article,article.id],(err,result)=>{
+            if(err || result.affectedRows !==1) res.status(500).send({status:500,msg:'修改文章失败，请重试！'})
+            res.send({status:200,msg:'修改文章成功！',articleId:article.id})
+        })
     }
 }

@@ -2,7 +2,10 @@
 <div class="container">
     <h1>
         <%=article.title%>
-        <a href="javascript:;" class="btn btn-info pull-right">编辑</a>
+        <!-- 如果用户没有登录，并且user.id对不上，就让编辑按钮隐藏 -->
+        <%if(user && user.id === article.auther_id) {%>
+        <a href="/article/edit/<%=article.id%>" class="btn btn-info pull-right">编辑</a>
+        <% } %>
     </h1> 
     <hr>
     <div>
