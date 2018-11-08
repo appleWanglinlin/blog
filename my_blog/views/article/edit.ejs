@@ -1,0 +1,46 @@
+<%- include('../common/header.ejs')%>
+<link rel="stylesheet" href="/node_modules/mditor/dist/css/mditor.min.css">
+<script src="/node_modules/mditor/dist/js/mditor.min.js"></script>
+  <div class="container">
+    <h1>这是首页</h1>
+    <hr>
+    <form id="form">
+        <!--在后台需要根据id查询数据，当在渲染编辑页面的时候，就把id存起来-->
+        <input type="hidden" name="id" value="<%=article.id%>">
+        <div class="from-group">
+            <label>文章标题</label>
+            <input type="text" name="title" class="form-control" required value="<%=article.title%>">
+        </div>
+      
+          <div class="from-group">
+            <label for="">文章内容</label>
+            <textarea name="content" class="form-control" id="editor"><%=article.content%></textarea>
+          </div> 
+      
+          <div class="from-group">
+            <input type="submit" value="保存文章" class="btn btn-primary">
+          </div>
+    </form>
+  
+  </div>
+  <script>
+    $(function(){
+      // 初始化编辑器
+      var mditor = Mditor.fromTextarea(document.getElementById('editor'));
+      $('#form').on('submit',function(e){
+          e.preventDefault();
+          $.ajax({
+              url:'/article/edit',
+              type:'post',
+              data:$('#form').serialize(),
+              dataType:'json',
+              success:function(res) {
+                  if(res.status === 200) {
+                      location.href = '/article/info/'+res.articleId;
+                  }
+              }
+          })
+      })
+    })
+  </script>
+<%- include('../common/footer.ejs')%>
