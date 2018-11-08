@@ -9,7 +9,7 @@ const app = express()
 //设置默认的模板引擎
 app.set('view engine','ejs')
 
-//模板的跟目录，将来渲染页面时都相对此路劲
+//模板的跟目录，将来渲染页面时都相对此路径
 app.set('views','./views')
 
 //托管静态资源
