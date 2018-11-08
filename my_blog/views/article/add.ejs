@@ -4,24 +4,46 @@
   <div class="container">
     <h1>这是首页</h1>
     <hr>
-    <div class="from-group">
-      <label for="">文章标题</label>
-      <input type="text" name="title" class="form-control">
-    </div>
-
-    <div class="from-group">
-      <label for="">文章内容</label>
-      <textarea name="content" class="form-control" id="editor"></textarea>
-    </div> 
-
-    <div class="from-group">
-      <input type="submit" value="发表文章" class="btn btn-primary">
-    </div>
+    <form id="form">
+        <!-- 在文章添加到页面的一瞬间，就立即把文章的作者id，保存到一个隐藏域中，防止session失效的问题 -->
+        <input type="hidden" name="auther_id" value="<%=user.id%>">
+        <div class="from-group">
+            <label>文章标题</label>
+            <input type="text" name="title" class="form-control" required>
+        </div>
+      
+          <div class="from-group">
+            <label for="">文章内容</label>
+            <textarea name="content" class="form-control" id="editor"></textarea>
+          </div> 
+      
+          <div class="from-group">
+            <input type="submit" value="发表文章" class="btn btn-primary">
+          </div>
+    </form>
+  
   </div>
   <script>
     $(function(){
       // 初始化编辑器
       var mditor = Mditor.fromTextarea(document.getElementById('editor'));
+     
+      $('#form').on('submit',function(e){
+        e.preventDefault();
+        $.ajax({
+          url:'/article/add',
+          type:'post',
+          data:$('#form').serialize(),
+          dataType:'json',
+          success:function(res) {
+            console.log(res);
+            if(res.status === 200) {
+              alert(res.msg);
+              location.href = '/article/info/'+res.insertId;
+            }
+          }
+        })
+      })
     })
   </script>
 <%- include('../common/footer.ejs')%>
