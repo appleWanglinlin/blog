@@ -1,3 +1,35 @@
 <%- include('./common/header.ejs')%>
-  <h1>这是首页</h1>
+  <div class="container">
+      <h1>文章列表</h1>
+      <div class="list-group">
+        <%articles.forEach(item=> {%>
+        <a href="/article/info/<%=item.id%>" class="list-group-item"><%=item.title%>
+          <span class="badge" style="background-color: rgb(219, 142, 41);">发表时间：<%=item.ctime%></span>
+          <span class="badge" style="background-color: rgb(137, 27, 240);">作者昵称：<%=item.nickname%></span>          
+        </a>
+        <% }) %>
+      </div>
+
+      <!-- 分页 -->
+      <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li class="<%=currentPage-1 < 1 ? 'disabled' : ''%>">
+              <<%=currentPage-1 < 1 ? 'span' : 'a'%> href="?page=<%=currentPage-1 < 1 ? 1 : currentPage-1%>" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </<%=currentPage-1 < 1 ? 'span' : 'a'%>>
+            </li>
+            <%for(var i=1;i<=totalPage;i++) {%>
+            <li class="<%=currentPage === i ? 'active' : '' %>">
+              <a href="?page=<%=i%>"><%=i%></a>
+            </li>
+            <% } %>
+            <li class="<%=currentPage+1 > totalPage ? 'disabled' : ''%>">
+              <<%=currentPage+1 > totalPage ? 'span' : 'a'%> href="?page=<%=currentPage+1 > totalPage ? totalPage : currentPage+1%>" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </<%=currentPage+1 > totalPage ? 'span' : 'a'%>>
+            </li>
+          </ul>
+        </nav>
+  </div>
+ 
 <%- include('./common/footer.ejs')%>
