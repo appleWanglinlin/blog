@@ -50,7 +50,6 @@ module.exports ={
                 article:result[0]
             })
         })
-       
     },
     handlePostArticleEdit(req,res){
         const article = req.body
